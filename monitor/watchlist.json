@@ -1,0 +1,15 @@
+{
+  "job_boards": [],
+  "job_keywords": ["unity", "xr", "virtual reality", "augmented reality", "immersive", "real-time 3d", "technical director", "interactive developer", "unreal engine", "creative technologist"],
+  "excluded_job_keywords": ["sales associate", "medical technician"],
+  "countries": ["United Arab Emirates", "Saudi Arabia", "United Kingdom", "Germany", "Belgium", "Netherlands", "Remote"],
+  "public_web_search": {
+    "enabled": false,
+    "max_queries_per_run": 4,
+    "queries": [
+      "Unity XR immersive developer job hiring UAE Saudi Arabia",
+      "immersive experiential agency new project partnership UAE",
+      "virtual reality interactive installation tender contract Saudi Arabia"
+    ]
+  }
+}
