@@ -7,6 +7,16 @@
 
 ## Pakistan Jobs — public and private sector
 
+### Pakistan Jobs reliability update (v13.1)
+
+The original Pakistan search combined many unrelated role keywords and restricted each request to one job portal, frequently yielding empty or irrelevant results. It now uses shorter role searches (Unity, XR, interactive, simulation/digital twins, senior technical roles), rotates government and private sources, and displays a warning if the deployed Supabase Edge Function still uses the older backend. Load More changes the query and deduplicates URLs; it is not true pagination through an authoritative vacancy database.
+
+**After any change to `supabase/functions/discover-jobs/index.ts` on GitHub, redeploy the updated source in Supabase Edge Functions → discover-jobs.** Existing Tavily secrets and database tables do not need to be recreated. A GitHub commit alone does not deploy Edge Functions.
+
+Filtered results remain **public-web research candidates**, not guaranteed open vacancies. For example, the NDMA careers portal publicly labels some older listings as Closed. Check the employer's own vacancy page, deadlines and eligibility before applying.
+
+
+
 The **Pakistan Jobs** tab is dedicated to local roles aligned with Nexora's developer profile:
 Unity developer, XR/AR/VR/MR developer, immersive developer, interactive installations, digital twins, simulation, real-time 3D, and technical/creative leadership.
 
