@@ -1,4 +1,4 @@
-# Nexora Founder Connect v12 — Growth Intelligence
+# Nexora Founder Connect v13 — Growth Intelligence
 
 **Live application:** https://daricxr.github.io/nexora-founder-connect/
 
