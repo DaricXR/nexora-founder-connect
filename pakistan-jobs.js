@@ -51,7 +51,7 @@
       const {data,error}=await api.functions.invoke('discover-jobs',{body:{
         market:'pakistan',country:'Pakistan',keywords:queryText(),focus:a.specialty==='technical-lead'?'leadership':a.specialty==='interactive'?'experiential':'engineering',
         remote:a.city==='Remote'?'remote':'any',page:statePk.page,
-        sector:a.sector,employer:a.employer,city:a.city
+        sector:a.sector,employer:a.employer,city:a.city,specialty:a.specialty
       }});
       if(error)throw error;
       if(data?.error)throw Error(data.error);
