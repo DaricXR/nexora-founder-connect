@@ -1,3 +1,50 @@
+# Nexora Founder Connect v12 — Growth Intelligence
+
+**Live application:** https://daricxr.github.io/nexora-founder-connect/
+
+**New in v12:** A **README · How It Works** tab inside the app, plus **Usage & Limits** for live Tavily credits and estimated Supabase database footprint. These features are additive to the existing v10 CRM, discovery, jobs and scheduled monitoring.
+
+## How the app works
+
+| Component | Technology | Responsibility |
+|---|---|---|
+| Public frontend | GitHub Pages, HTML/CSS/JavaScript | Navigation, contacts, dashboards and outreach drafts |
+| Authentication | Supabase Auth | Email/password sign in |
+| Private data | Supabase PostgreSQL with RLS | Save each signed-in user's leads, companies, jobs, alerts |
+| Founder research | Supabase Edge Function + Tavily | Public-web discovery from user-selected search filters |
+| Job search | Supabase Edge Function + Tavily | Find potential publicly indexed job listings |
+| Employer monitoring | GitHub Actions + Python | Scheduled scans of configured Greenhouse/Lever public boards |
+| Company research signals | Tavily via GitHub Actions | Optional public-web research; results require human verification |
+| Usage metrics | Supabase Edge Function + SQL RPC | Tavily API credits and estimated database size |
+
+**Typical workflow:** Discover → verify person/company → save to CRM → choose project/partnership/career pipeline → write a personalized message → mark Contacted → set follow-up → measure outcomes. Job listings are saved and tracked separately. Alerts are monitored separately and reviewed manually.
+
+**Data retention:** A contacted person remains contacted on subsequent refresh or import; alerts are deduplicated by identity. The service-role and Tavily API keys must never appear in public code. Supabase uses RLS for per-user data access.
+
+## Enable the new Usage & Limits tab
+
+The v12 frontend is committed to GitHub, but **the live backend usage metrics require one-time setup in your Supabase account**:
+
+1. Supabase → SQL Editor: execute [supabase/usage.sql](supabase/usage.sql).
+2. Supabase → Edge Functions: deploy function named **usage-status** from [supabase/functions/usage-status/index.ts](supabase/functions/usage-status/index.ts).
+3. Supabase → Edge Functions → Secrets: confirm **TAVILY_API_KEY** exists and is set. Keep JWT verification enabled.
+4. Sign in on your GitHub Pages website, open **Usage & Limits** and click **Refresh usage**.
+
+See [USAGE_SETUP.md](USAGE_SETUP.md) for troubleshooting.
+
+### What usage numbers are real?
+
+- **Tavily** account credits consumed / remaining are fetched from its usage API through the protected Edge Function. This includes credit use elsewhere under the same Tavily account.
+- **Supabase database size** is retrieved by a read-only SQL RPC and represents an approximate current database footprint, **not** an official invoice/usage statement.
+- Other Supabase Free quotas (50,000 MAU, 500,000 monthly Edge Function invocations, 5 GB egress, 1 GB storage) are **reference allowances only**. Exact consumption remains available in your Supabase organization's billing/usage dashboard.
+- This version does **not** connect to your private Supabase billing admin API and does not invent exact account-level monthly consumption.
+
+## Existing v10 setup and scheduling
+
+The documentation below covers the existing monitor, data migrations, and the original deployment.
+
+---
+
 # Nexora Founder Connect v10 — Scheduled Opportunity Intelligence
 
 GitHub Pages + Supabase Auth/Postgres + **GitHub Actions daily checks**. No Cloudflare, no paid server required within provider free-tier quotas. This includes everything from v9, plus **Alerts & Daily Priorities**, monitored published jobs, optional public-web company signals, review workflows, and duplicate suppression.
