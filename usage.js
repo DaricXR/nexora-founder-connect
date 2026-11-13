@@ -20,11 +20,11 @@
     button.disabled = true;
     text('usageStatus', 'Refreshing usage…');
     try {
-      if (!window.CLOUD || !window.api) {
+      if (!CLOUD || !api) {
         text('usageStatus', 'Sign in with Supabase to retrieve live usage. Free-plan limits below are reference values.');
         return;
       }
-      const { data: sessionData, error: sessionErr } = await window.api.auth.getSession();
+      const { data: sessionData, error: sessionErr } = await api.auth.getSession();
       if (sessionErr || !sessionData?.session) {
         text('usageStatus', 'Sign in to your Supabase account, then refresh usage.');
         return;
@@ -32,7 +32,7 @@
       let success = 0;
       const problems = [];
       try {
-        const { data, error } = await window.api.functions.invoke('usage-status', { body: {} });
+        const { data, error } = await api.functions.invoke('usage-status', { body: {} });
         if (error) throw error;
         if (!data || data.error) throw new Error(data?.error || 'Unexpected usage response');
         const account = data.account || {};
@@ -51,7 +51,7 @@
         problems.push('Tavily: ' + (error?.message || 'usage-status is not deployed / configured'));
       }
       try {
-        const { data, error } = await window.api.rpc('nexora_database_size_bytes');
+        const { data, error } = await api.rpc('nexora_database_size_bytes');
         if (error) throw error;
         const size = Number(data);
         if (!Number.isFinite(size) || size < 0) throw Error('Database returned invalid size');
