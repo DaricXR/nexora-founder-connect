@@ -26,3 +26,14 @@
 .quota-grid b{font-size:16px}
 @media(max-width:760px){.usage-grid,.docs-grid{grid-template-columns:1fr}.quota-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:440px){.quota-grid{grid-template-columns:1fr}.usage-card{padding:15px}}
+
+
+/* Pakistan Jobs discovery workspace */
+.pk-filters{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0}
+.pk-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.pk-source-grid a{text-decoration:none;background:#0b1a2c;border:1px solid #304a62;border-radius:12px;padding:15px;display:flex;flex-direction:column;gap:4px;color:var(--accent)}
+.pk-source-grid a:hover{border-color:var(--accent);background:#102b3a}
+.pk-source-grid a b{color:var(--text);font-size:14px}
+.pk-source-grid a span{color:var(--muted);font-size:12px}
+@media(max-width:1000px){.pk-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-source-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.pk-filters,.pk-source-grid{grid-template-columns:1fr}}
