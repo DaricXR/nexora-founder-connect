@@ -53,6 +53,7 @@
       try {
         const { data, error } = await api.rpc('nexora_database_size_bytes');
         if (error) throw error;
+        if (data === null || data === undefined) throw Error('Database size unavailable: check your authentication');
         const size = Number(data);
         if (!Number.isFinite(size) || size < 0) throw Error('Database returned invalid size');
         const mb = size / 1e6;
