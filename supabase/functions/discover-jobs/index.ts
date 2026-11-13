@@ -32,7 +32,8 @@ Deno.serve(async(req)=>{
   const officialSites=['www.njp.gov.pk','jobs.punjab.gov.pk','www.ndma.gov.pk','www.nccia.gov.pk','nastp.gov.pk','techdestination.com','www.pitb.gov.pk','jobs.gov.pk','jobcenter.punjab.gov.pk','joinpaf.gov.pk'];
   const privateSites=['linkedin.com/jobs','rozee.pk','mustakbil.com','brightspyre.com','pk.indeed.com','jobs.lever.co','boards.greenhouse.io'];
   const employerSites:Record<string,string[]>={PITB:['jobs.punjab.gov.pk','www.pitb.gov.pk'],NDMA:['www.ndma.gov.pk'],NCCIA:['www.nccia.gov.pk'],PAF:['joinpaf.gov.pk'],NASTP:['nastp.gov.pk'],NJP:['www.njp.gov.pk'],PSEB:['techdestination.com','www.njp.gov.pk'],NADRA:['www.njp.gov.pk','careers.nadra.gov.pk'],Ignite:['ignite.org.pk','www.njp.gov.pk']};
-  const scoped=employerSites[employer]||(sector==='government'?officialSites:sector==='private'?privateSites:[...officialSites,...privateSites]);
+  const blended=Array.from({length:Math.max(officialSites.length,privateSites.length)},(_,i)=>[officialSites[i],privateSites[i]]).flat().filter(Boolean) as string[];
+  const scoped=employerSites[employer]||(sector==='government'?officialSites:sector==='private'?privateSites:blended);
   const selectedSite=scoped[page%scoped.length];
   const specialties:Record<string,string>={all:'Unity XR VR immersive interactive developer digital twin simulation real-time 3D',unity:'Unity real time 3D developer',xr:'XR AR VR MR developer',interactive:'interactive developer experiential game', 'digital-twin':'digital twin simulation visualization','technical-lead':'technical director immersive lead'};
   const pkRole=specialties[clean(input.specialty,24)]||keywords;
