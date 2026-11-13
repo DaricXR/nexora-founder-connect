@@ -27,9 +27,12 @@
     $('pkScope').textContent=({all:'All sectors',private:'Private',government:'Government'})[$('pkSector').value];
     $('pkResults').innerHTML=statePk.items.length ? statePk.items.map((x,index)=>{
       const verifiedDomain=knownSources.has(host(x.url));
-      return '<article class="lead"><span class="pill">'+(verifiedDomain?'Official domain':'Research candidate')+'</span>'+
+      const text=(x.title+' '+x.snippet).toLowerCase();
+      const vacancySignal=/vacanc|hiring|job opening|apply now|apply online|career|recruit|position available|developer|engineer|specialist/.test(text);
+      const badge=vacancySignal?'Potential listing':'Research page';
+      return '<article class="lead"><span class="pill">'+escapeHtml(badge)+'</span>'+
       '<div><div class="lead-top"><h3>'+escapeHtml(x.title)+'</h3></div><p>'+escapeHtml(x.snippet||'No listing summary provided.').slice(0,550)+'</p>'+
-      '<div class="pills"><span class="pill">Pakistan search</span><span class="pill">'+escapeHtml(host(x.url))+'</span></div></div>'+
+      '<div class="pills"><span class="pill">'+(verifiedDomain?'Official domain':'Public web')+'</span><span class="pill">'+escapeHtml(host(x.url))+'</span></div></div>'+
       '<div class="lead-actions"><a href="'+escapeHtml(x.url)+'" target="_blank" rel="noopener noreferrer">Verify listing ↗</a>'+
       '<button class="pk-save" data-index="'+index+'">Save to job tracker</button></div></article>';
     }).join('') : '<div class="empty">No results yet. Search public job sources above, or use the official portal links.</div>';
@@ -41,6 +44,7 @@
       return;
     }
     const a=args(), sig=JSON.stringify(a);
+    if(more && statePk.page>=25){$('pkStatus').textContent='All 25 available search angles have been requested. Change a filter and search again.';return;}
     if(!more || sig!==statePk.signature){
       statePk.page=0;statePk.items=[];statePk.seen.clear();statePk.signature=sig;statePk.requests=0;
     }
@@ -64,15 +68,18 @@
         statePk.items.push({title:String(result.title||'Job listing').slice(0,220),url,snippet:String(result.snippet||'').slice(0,800)});
         newCount++;
       }
-      statePk.page=Math.min(24,statePk.page+1);
+      statePk.page++;
       statePk.requests++;
-      $('pkStatus').textContent=statePk.items.length+' unique research links · '+newCount+' new in this batch. Confirm the role, deadline and employer on the original page. Load More changes search angles; it cannot guarantee new results.';
+      const backendNew=data?.market==='pakistan';
+      const scope=data?.scope||'Public web';
+      $('pkStatus').textContent=(backendNew?'': 'Search backend needs the latest Pakistan update deployed in Supabase. ')+statePk.items.length+' unique research links · '+newCount+' new. Search angle: '+scope+'. Verify titles, employers, deadlines and eligibility on the original site.';
+      if(statePk.page>=25)$('pkMore').disabled=true;
       render();
     } catch(e) {
       $('pkStatus').textContent='Live search failed: '+(e.message||'Unknown error')+'. Confirm discover-jobs is deployed and Tavily credits are available.';
     } finally {
       statePk.searching=false;
-      $('pkSearch').disabled=$('pkMore').disabled=false;
+      $('pkSearch').disabled=false;$('pkMore').disabled=statePk.page>=25;
     }
   }
   function save(index) {
@@ -103,7 +110,7 @@
     const button=e.target.closest('.pk-save');if(button)save(Number(button.dataset.index));
   });
   for(const id of ['pkSector','pkEmployer','pkSpecialty','pkCity']){
-    $(id)?.addEventListener('change',()=>{statePk.signature='';$('pkScope').textContent=({all:'All sectors',private:'Private',government:'Government'})[$('pkSector').value];});
+    $(id)?.addEventListener('change',()=>{statePk.signature='';statePk.page=0;statePk.items=[];statePk.seen.clear();$('pkMore').disabled=false;$('pkCount').textContent='0';$('pkResults').innerHTML='<div class="empty">Filters changed. Click Search Pakistan vacancies to load new results.</div>';$('pkStatus').textContent='Filters updated. Search again to retrieve matching results.';$('pkScope').textContent=({all:'All sectors',private:'Private',government:'Government'})[$('pkSector').value];});
   }
   if(location.hash==='#pakistan-jobs')window.addEventListener('load',()=>document.querySelector('[data-workspace="pakistan-jobs"]')?.click());
 })();
