@@ -5,3 +5,24 @@
 
 /* Growth intelligence extensions */
 .message-output{width:100%;min-height:200px;line-height:1.6;resize:vertical}.sequence{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.sequence>div,.insight-card{background:#101e31;border:1px solid #29415b;border-radius:12px;padding:15px}.sequence strong,.sequence span{display:block}.sequence span{font-size:13px;color:#a9bbcf;margin-top:8px}.stats-inline{margin:16px 0}.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:15px}.ins-bars{display:grid;gap:11px;margin-top:15px}.ins-row{display:grid;grid-template-columns:minmax(90px,150px) 1fr 32px;align-items:center;gap:9px;font-size:13px}.ins-track{height:9px;background:#24364d;border-radius:12px;overflow:hidden}.ins-fill{height:100%;background:linear-gradient(90deg,#35bdaa,#6e9aff);border-radius:12px}.account-signal{margin-top:8px;color:#cce1ef}.account-signal small{color:#8ea8c3}.workspace-nav{flex-wrap:wrap}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #62cfd5;outline-offset:2px}@media(max-width:680px){.sequence{grid-template-columns:1fr}.ins-row{grid-template-columns:85px 1fr 24px}}
+
+
+/* Usage & Documentation workspace, v12 */
+.usage-grid,.docs-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+.usage-card{background:#0b1a2c;border:1px solid #2f4860;border-radius:12px;padding:20px;min-width:0}
+.usage-card h3{margin:0 0 7px;font-size:17px}
+.usage-card p{color:var(--muted)}
+.usage-card a,.panel.info a{color:var(--accent)}
+.usage-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.usage-big{display:flex;gap:10px;align-items:baseline;margin:17px 0 8px}
+.usage-big strong{font-size:33px;line-height:1.2;font-variant-numeric:tabular-nums}
+.usage-big span,.usage-pair{color:var(--muted);font-size:12px}
+.usage-meter{width:100%;height:11px;border:1px solid #365570;background:#07121f;border-radius:99px;overflow:hidden;margin-bottom:10px}
+.usage-meter>div{height:100%;background:linear-gradient(90deg,#61e2c4,#8bb8ff);width:0%;transition:width .35s ease}
+.usage-pair{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.quota-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.quota-grid>div{padding:15px;background:#0b1a2c;border:1px solid #2f4860;border-radius:10px;display:flex;flex-direction:column;gap:5px}
+.quota-grid span{color:var(--muted);font-size:12px}
+.quota-grid b{font-size:16px}
+@media(max-width:760px){.usage-grid,.docs-grid{grid-template-columns:1fr}.quota-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:440px){.quota-grid{grid-template-columns:1fr}.usage-card{padding:15px}}
