@@ -16,17 +16,30 @@ ROOT = Path(__file__).resolve().parent
 HEADERS = {'User-Agent':'NexoraMonitor/1.0 (public jobs discovery)', 'Accept':'application/json'}
 
 
+
 def request_json(url, method='GET', data=None, headers=None):
     if not url.startswith('https://'):
         raise ValueError('Only HTTPS endpoints allowed')
+
     body = json.dumps(data).encode('utf-8') if data is not None else None
-    req = urllib.request.Request(url, data=body, method=method,
-                                 headers={**HEADERS, **({'Content-Type':'application/json'} if data is not None else {}), **(headers or {})})
+
+    req = urllib.request.Request(
+        url,
+        data=body,
+        method=method,
+        headers={
+            **HEADERS,
+            **({'Content-Type': 'application/json'} if data is not None else {}),
+            **(headers or {})
+        }
+    )
+
     with urllib.request.urlopen(req, timeout=22) as response:
-    raw = response.read(3_000_000)
-    if not raw.strip():
-        return None
-    return json.loads(raw)
+        raw = response.read(3_000_000)
+        if not raw.strip():
+            return None
+        return json.loads(raw)
+
 
 
 
