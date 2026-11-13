@@ -24,26 +24,94 @@ Deno.serve(async(req)=>{
   const targets=['site:greenhouse.io','site:jobs.lever.co','site:jobs.ashbyhq.com','site:workable.com','site:linkedin.com/jobs/view','site:indeed.com/viewjob'];
   const expansions=['hiring careers opening','apply now full time','job role position','vacancy company careers'];
   const role=focus==='leadership'?'XR technical lead director':focus==='experiential'?'interactive experiences experiential developer':'Unity VR AR XR developer';
-  // Pakistan-mode results are public research candidates, not verified vacancies.
+  // Pakistan job searches: short targeted searches rather than many mandatory
+  // keywords + a single site: filter. Public results require manual verification.
   const pakistanMarket=input.market==='pakistan';
   const sector=['all','government','private'].includes(input.sector)?input.sector:'all';
-  const employer=clean(input.employer,24);
+  const employer=clean(input.employer,30);
   const city=clean(input.city,30);
-  const officialSites=['www.njp.gov.pk','jobs.punjab.gov.pk','www.ndma.gov.pk','www.nccia.gov.pk','nastp.gov.pk','techdestination.com','www.pitb.gov.pk','jobs.gov.pk','jobcenter.punjab.gov.pk','joinpaf.gov.pk'];
-  const privateSites=['linkedin.com/jobs','rozee.pk','mustakbil.com','brightspyre.com','pk.indeed.com','jobs.lever.co','boards.greenhouse.io'];
-  const employerSites:Record<string,string[]>={PITB:['jobs.punjab.gov.pk','www.pitb.gov.pk'],NDMA:['www.ndma.gov.pk'],NCCIA:['www.nccia.gov.pk'],PAF:['joinpaf.gov.pk'],NASTP:['nastp.gov.pk'],NJP:['www.njp.gov.pk'],PSEB:['techdestination.com','www.njp.gov.pk'],NADRA:['www.njp.gov.pk','careers.nadra.gov.pk'],Ignite:['ignite.org.pk','www.njp.gov.pk']};
-  const blended=Array.from({length:Math.max(officialSites.length,privateSites.length)},(_,i)=>[officialSites[i],privateSites[i]]).flat().filter(Boolean) as string[];
-  const scoped=employerSites[employer]||(sector==='government'?officialSites:sector==='private'?privateSites:blended);
-  const selectedSite=scoped[page%scoped.length];
-  const specialties:Record<string,string>={all:'Unity XR VR immersive interactive developer digital twin simulation real-time 3D',unity:'Unity real time 3D developer',xr:'XR AR VR MR developer',interactive:'interactive developer experiential game', 'digital-twin':'digital twin simulation visualization','technical-lead':'technical director immersive lead'};
-  const pkRole=specialties[clean(input.specialty,24)]||keywords;
-  const searchAngle=['hiring careers','job vacancy apply','open positions recruitment','software engineering simulation','real time 3D interactive'][Math.floor(page/scoped.length)%5];
-  const query=pakistanMarket
-    ? 'site:'+selectedSite+' '+pkRole+' '+(city||'Pakistan')+' '+(employer!=='all'&&employer!=='Other'?employer:'')+' '+searchAngle+' '+new Date().getUTCFullYear()
-    : targets[page%targets.length]+' '+keywords+' '+role+' '+country+' '+(remote==='remote'?'remote':remote==='onsite'?'onsite hybrid':'')+' '+expansions[Math.floor(page/targets.length)%expansions.length]+' '+new Date().getUTCFullYear();
+  const specialty=clean(input.specialty,30);
+  const officialSites=['njp.gov.pk','jobs.punjab.gov.pk','ndma.gov.pk','nccia.gov.pk','nastp.gov.pk','techdestination.com','pitb.gov.pk','jobs.gov.pk','joinpaf.gov.pk','jobcenter.punjab.gov.pk'];
+  const privateSites=['rozee.pk','mustakbil.com','linkedin.com/jobs','brightspyre.com','pk.indeed.com','jobs.lever.co','boards.greenhouse.io'];
+  const employers:Record<string,{names:string[],domains:string[]}>={
+    PITB:{names:['PITB','Punjab Information Technology Board'],domains:['jobs.punjab.gov.pk','pitb.gov.pk']},
+    NDMA:{names:['NDMA','National Disaster Management Authority'],domains:['ndma.gov.pk']},
+    NCCIA:{names:['NCCIA','National Cyber Crime Investigation Agency'],domains:['nccia.gov.pk']},
+    PAF:{names:['PAF','Pakistan Air Force'],domains:['joinpaf.gov.pk']},
+    NASTP:{names:['NASTP','National Aerospace Science Technology Park'],domains:['nastp.gov.pk']},
+    NJP:{names:['National Jobs Portal'],domains:['njp.gov.pk']},
+    PSEB:{names:['PSEB','Pakistan Software Export Board'],domains:['techdestination.com','njp.gov.pk']},
+    NADRA:{names:['NADRA'],domains:['careers.nadra.gov.pk','njp.gov.pk']},
+    Ignite:{names:['Ignite','Ignite National Technology Fund'],domains:['ignite.org.pk','njp.gov.pk']}
+  };
+  const roleGroups:Record<string,string[]>={
+    all:['Unity developer','VR AR developer','simulation engineer','interactive developer','digital twin developer','3D visualization developer','software engineer'],
+    unity:['Unity developer','Unity 3D developer','game developer','real-time 3D developer'],
+    xr:['AR VR developer','XR developer','virtual reality developer','simulation engineer'],
+    interactive:['interactive developer','game developer','interactive media developer','creative technologist'],
+    'digital-twin':['digital twin developer','simulation engineer','3D visualization developer','GIS 3D developer'],
+    'technical-lead':['technical lead Unity','technical director simulation','senior software engineer','XR technical lead']
+  };
+  const roleList=roleGroups[specialty]||roleGroups.all;
+  const offset=page;
+  const rolePhrase=roleList[offset%roleList.length];
+  const year=String(new Date().getUTCFullYear());
+  const location=city&&city!=='Remote'?city+' Pakistan':'Pakistan';
+  const chosen=employers[employer];
+  const govtSources=officialSites.map(d=>'site:'+d);
+  const privateSources=privateSites.map(d=>'site:'+d);
+  // A named employer stays targeted; for "all" we alternate direct employer
+  // job board searches and broad searches to avoid nearly-empty searches.
+  let query='';
+  let scope='';
+  if(pakistanMarket){
+    const angle=Math.floor(offset/roleList.length);
+    if(chosen){
+      const name=chosen.names[angle%chosen.names.length];
+      if(angle%3===0){
+        const domain=chosen.domains[angle%chosen.domains.length];
+        query='site:'+domain+' careers vacancy '+rolePhrase;
+        scope='Official employer source';
+      }else{
+        query='"'+name+'" '+rolePhrase+' jobs Pakistan';
+        scope='Named employer research';
+      }
+    }else if(sector==='government'){
+      if(offset%3===0){
+        query=govtSources[Math.floor(offset/3)%govtSources.length]+' '+rolePhrase+' jobs';
+        scope='Government portal';
+      }else{
+        query=rolePhrase+' government public sector jobs '+location+' '+year;
+        scope='Government-wide';
+      }
+    }else if(sector==='private'){
+      if(offset%3===0){
+        query=privateSources[Math.floor(offset/3)%privateSources.length]+' '+rolePhrase+' '+location;
+        scope='Private job board';
+      }else{
+        query=rolePhrase+' hiring careers software studio '+location+' '+year;
+        scope='Private companies';
+      }
+    }else{
+      if(offset%4===0){
+        query=govtSources[Math.floor(offset/4)%govtSources.length]+' '+rolePhrase+' jobs';
+        scope='Government portal';
+      }else if(offset%4===1){
+        query=privateSources[Math.floor(offset/4)%privateSources.length]+' '+rolePhrase+' Pakistan';
+        scope='Private job board';
+      }else{
+        query=rolePhrase+' jobs openings '+location+' '+year;
+        scope='All employers';
+      }
+    }
+    if(city==='Remote')query+=' remote';
+  }else{
+    query=targets[page%targets.length]+' '+keywords+' '+role+' '+country+' '+(remote==='remote'?'remote':remote==='onsite'?'onsite hybrid':'')+' '+expansions[Math.floor(page/targets.length)%expansions.length]+' '+year;
+    scope='International';
+  }
   const response=await fetch('https://api.tavily.com/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:key,query,search_depth:'basic',max_results:20,include_answer:false,include_raw_content:false})});
   const body=await response.json();if(!response.ok)return respond({error:String(body.detail||body.error||response.status)},502);
   const items=(Array.isArray(body.results)?body.results:[]).filter((x:any)=>/^https?:\/\//.test(String(x.url||''))).map((x:any)=>({title:String(x.title||'').slice(0,220),url:String(x.url||'').slice(0,1600),snippet:String(x.content||'').slice(0,800),source:'Public web search'}));
-  return respond({items,page,query,notice:'Public web search can return old/closed vacancies or articles. Verify the employer posting before applying. Load more changes search queries; it is not a complete paginated job feed.'});
+  return respond({items,page,query,scope,market:pakistanMarket?'pakistan':'international',notice:'Search results are unverified indexed pages; not guaranteed current openings. Check dates and apply on the employer portal.'});
  }catch(e){return respond({error:String(e)},500);}
 });
