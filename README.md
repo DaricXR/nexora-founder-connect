@@ -4,6 +4,33 @@
 
 **New in v12:** A **README · How It Works** tab inside the app, plus **Usage & Limits** for live Tavily credits and estimated Supabase database footprint. These features are additive to the existing v10 CRM, discovery, jobs and scheduled monitoring.
 
+
+## Pakistan Jobs — public and private sector
+
+The **Pakistan Jobs** tab is dedicated to local roles aligned with Nexora's developer profile:
+Unity developer, XR/AR/VR/MR developer, immersive developer, interactive installations, digital twins, simulation, real-time 3D, and technical/creative leadership.
+
+- Select **Government / Public sector**, **Private companies / Studios**, or both.
+- Choose a priority employer such as PITB, NDMA, NCCIA, PAF, NASTP, PSEB, or the federal National Jobs Portal.
+- Filter by specialty and city; **Search Pakistan vacancies** uses the existing signed-in \`discover-jobs\` Supabase Edge Function with \`market:"pakistan"\`.
+- **Load more discoveries** changes the source/search query and deduplicates URLs. Tavily doesn't guarantee fresh results or exhaustive job-board pagination.
+- Click **Verify listing** to open the source; use **Save to job tracker** to prefill the existing jobs form, confirm employer/title, and save through the same private Supabase \`jobs\` database. Your application stages and follow-ups remain in Job Openings.
+- Direct official portal links remain available even if Tavily is exhausted or an API fails. The official domains are listed for research, not as proof of an open job.
+
+### Required deployment step for Pakistan-specific search
+
+**The GitHub Pages tab publishes automatically from main**, but the Pakistan employer/site prioritization is implemented in \`supabase/functions/discover-jobs/index.ts\` and **does not deploy automatically from GitHub Pages**. In Supabase Dashboard → Edge Functions → \`discover-jobs\` → edit function, replace its source with the latest code from the repository and redeploy. Keep the existing \`TAVILY_API_KEY\` secret and authenticated JWT verification.
+
+Before Edge Function redeployment, the Pakistan tab can call the currently deployed function, but government/private and named-employer site filters will not yet be honored by the backend; the existing function searches a broader set of sources.
+
+Do not interpret an indexed page as an active job. Verify posting date, closing date, role, eligibility and official employer website before applying.
+
+### Official sources
+
+- Government: https://www.njp.gov.pk/jobs/live, https://jobs.punjab.gov.pk/, https://www.ndma.gov.pk/careers, https://www.nccia.gov.pk/careers.php, https://joinpaf.gov.pk/, https://nastp.gov.pk/, https://techdestination.com/careers/
+- Government + private: https://jobs.gov.pk/, https://jobcenter.punjab.gov.pk/
+- The app also targets public private-sector indexed pages such as LinkedIn Jobs, Rozee, Mustakbil, BrightSpyre, and employer-hosted Greenhouse/Lever pages, where searchable. It does not scrape authenticated LinkedIn content.
+
 ## How the app works
 
 | Component | Technology | Responsibility |
