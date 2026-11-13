@@ -1,3 +1,16 @@
+## Pakistan Jobs integration checks — November 14, 2026
+
+- PASS: Pakistan Jobs tab exists and uses the existing workspace navigation.
+- PASS: Government/private, named employer, specialty and city filters appear.
+- PASS: Dedicated client JavaScript parses successfully.
+- PASS: Mock authenticated API test: \`discover-jobs\` invoked with \`market:"pakistan"\`, \`sector:"government"\`, \`employer:"PITB"\`, \`specialty:"xr"\`, \`city:"Lahore"\`.
+- PASS: Load More increments backend page argument from 0 to 1; repeated candidate URLs are deduplicated.
+- PASS: Search result cards render and saved-job workflow targets the existing Jobs form.
+- PASS: Official government source links include NJP, Punjab Jobs/PITB, NDMA, NCCIA, PAF, NASTP, and PSEB.
+- PASS: Existing Jobs SQL, \`config.js\`, CRM, founder discovery and monitoring files left intact.
+- REQUIRES DEPLOYMENT: \`supabase/functions/discover-jobs/index.ts\` was updated in GitHub but Supabase does not automatically deploy this source. Redeploy it in Supabase Edge Functions to activate targeted Pakistan source filtering.
+- NOT TESTED: Live Tavily and Supabase responses in the owner's authenticated production account; government/private indexed results are not guaranteed to be current or exhaustive.
+
 ## v12 integration checks — November 13, 2026
 
 Changes were based on the latest accessible GitHub \`main\` files, rather than an older ZIP. Tests conducted on committed source:
