@@ -23,7 +23,11 @@ def request_json(url, method='GET', data=None, headers=None):
     req = urllib.request.Request(url, data=body, method=method,
                                  headers={**HEADERS, **({'Content-Type':'application/json'} if data is not None else {}), **(headers or {})})
     with urllib.request.urlopen(req, timeout=22) as response:
-        return json.loads(response.read(3_000_000))
+    raw = response.read(3_000_000)
+    if not raw.strip():
+        return None
+    return json.loads(raw)
+
 
 
 def clean(text):
